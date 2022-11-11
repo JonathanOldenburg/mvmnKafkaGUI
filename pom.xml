@@ -47,6 +47,12 @@
 			<artifactId>flatlaf</artifactId>
 			<version>0.43</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+			<artifactId>avro</artifactId>
+			<version>1.8.2</version>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -68,6 +68,14 @@ import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.apache.avro.Schema;
+import org.apache.avro.file.DataFileReader;
+import org.apache.avro.file.SeekableByteArrayInput;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericDatumReader;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.generic.GenericRecordBuilder;
+import org.apache.avro.io.DatumReader;
 import org.apache.commons.io.FileUtils;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
@@ -171,8 +179,9 @@ public class KafkaAdminGui extends JFrame {
 	protected final Properties clientConfig;
 	protected final List<ConsumerRecord<String, byte[]>> currentResults = new CopyOnWriteArrayList<>();
 
-	protected final JComboBox<String> msgPostProcessor = new JComboBox<>(new String[] { "None", "JSON pretty-print", "Groovy script" });
+	protected final JComboBox<String> msgPostProcessor = new JComboBox<>(new String[] { "None", "JSON pretty-print", "Avro pretty-print", "Groovy script" });
 	protected final JTextArea txaGroovyTransform = new JTextArea(DEFAULT_GROOVY_TRANSFORMER_CODE);
+	protected final JTextArea txaAvroSchema = new JTextArea();
 
 	protected final Font defaultFont;
 	protected final Font monospacedFont;
@@ -504,6 +513,7 @@ public class KafkaAdminGui extends JFrame {
 				tabPane.addTab("Message content", new JScrollPane(msgContent));
 				tabPane.addTab("Message headers", new JScrollPane(msgHeaders));
 				tabPane.addTab("Groovy processor", new JScrollPane(txaGroovyTransform));
+				tabPane.addTab("Avro schema", new JScrollPane(txaAvroSchema));
 				msgPanel.add(tabPane, gbc);
 
 				gbc = new GridBagConstraints();
@@ -966,6 +976,20 @@ public class KafkaAdminGui extends JFrame {
 					content = result.toString().getBytes(StandardCharsets.UTF_8);
 				} else {
 					content = new byte[0];
+				}
+			} else if (postProcessorName.equals("Avro pretty-print")) {
+				Schema.Parser schemaParser = new Schema.Parser();
+				Schema schema = schemaParser.parse(txaAvroSchema.getText());
+
+				DatumReader<GenericRecord> reader = new GenericDatumReader<>(schema);
+				try(DataFileReader<GenericRecord> fileReader = new DataFileReader<>(new SeekableByteArrayInput(content), reader)) {
+					StringBuilder sb = new StringBuilder();
+					while (fileReader.hasNext()) {
+						GenericRecord record = fileReader.next();
+						// todo usar o schema para pegar os types do record
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 		} else {

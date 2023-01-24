@@ -24,3 +24,6 @@ hs_err_*.log
 
 ## Bower
 src/main/resources/x/mvmn/gp2srv/web/static/js
+
+## Intellij
+.idea/

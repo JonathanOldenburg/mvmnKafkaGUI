@@ -58,6 +58,7 @@ public class MVMnKafkaGUIApplication {
 					}), cfg -> new KafkaAdminGui(cfg.getA(), cfg.getB(), appHomeFolder));
 			SwingUtil.prefSizeRatioOfScreenSize(connectionsManagerWindow, 0.7f);
 			connectionsManagerWindow.pack();
+			connectionsManagerWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			SwingUtil.moveToScreenCenter(connectionsManagerWindow);
 			connectionsManagerWindow.setVisible(true);
 		});

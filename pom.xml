@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.12</version>
+			<version>1.18.24</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -49,9 +49,23 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.avro</groupId>
-			<artifactId>avro</artifactId>
-			<version>1.8.2</version>
+			<groupId>io.github.productboardlabs</groupId>
+			<artifactId>jackson-kafka-avro-serializer</artifactId>
+			<version>0.7.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.kafka</groupId>
+					<artifactId>kafka-clients</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.swagger</groupId>
+					<artifactId>swagger-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.swagger</groupId>
+					<artifactId>swagger-annotations</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 

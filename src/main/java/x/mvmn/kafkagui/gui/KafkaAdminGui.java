@@ -1,12 +1,6 @@
 package x.mvmn.kafkagui.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -175,7 +169,7 @@ public class KafkaAdminGui extends JFrame {
 
 	protected final JComboBox<String> msgPostProcessor = new JComboBox<>(new String[] { "None", "JSON pretty-print", "Avro pretty-print", "Groovy script" });
 	protected final JTextArea txaGroovyTransform = new JTextArea(DEFAULT_GROOVY_TRANSFORMER_CODE);
-	protected final JTextField txtSchemaRegistry = new JTextField("http://127.0.0.1");
+	protected final JTextField txtSchemaRegistry = new JTextField("http://127.0.0.1:8081", 50);
 
 	protected final Font defaultFont;
 	protected final Font monospacedFont;
@@ -507,7 +501,10 @@ public class KafkaAdminGui extends JFrame {
 				tabPane.addTab("Message content", new JScrollPane(msgContent));
 				tabPane.addTab("Message headers", new JScrollPane(msgHeaders));
 				tabPane.addTab("Groovy processor", new JScrollPane(txaGroovyTransform));
-				tabPane.addTab("Schema registry", new JScrollPane(txtSchemaRegistry));
+				final JPanel pnlSchemaRegistry = new JPanel();
+				pnlSchemaRegistry.setLayout(new FlowLayout());
+				pnlSchemaRegistry.add(txtSchemaRegistry);
+				tabPane.addTab("Schema registry", pnlSchemaRegistry);
 				msgPanel.add(tabPane, gbc);
 
 				gbc = new GridBagConstraints();
@@ -980,8 +977,13 @@ public class KafkaAdminGui extends JFrame {
 								new CachedSchemaRegistryClient(txtSchemaRegistry.getText(), 10)
 							)
 					) {
-						return String.valueOf(deserializer.deserialize(msgReadTopic.getText(), content)).getBytes(StandardCharsets.UTF_8);
+						final String avroMessage = String.valueOf(deserializer.deserialize(msgReadTopic.getText(), content));
+
+						content = objectMapper
+								.writerWithDefaultPrettyPrinter()
+								.writeValueAsBytes(objectMapper.readTree(avroMessage));
 					} catch (Exception e) {
+						JOptionPane.showMessageDialog(this, e.getMessage(), "Erro ao deserializar avro", JOptionPane.ERROR_MESSAGE);
 						e.printStackTrace();
 					}
 					break;

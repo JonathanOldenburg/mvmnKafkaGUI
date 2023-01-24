@@ -175,7 +175,7 @@ public class KafkaAdminGui extends JFrame {
 
 	protected final JComboBox<String> msgPostProcessor = new JComboBox<>(new String[] { "None", "JSON pretty-print", "Avro pretty-print", "Groovy script" });
 	protected final JTextArea txaGroovyTransform = new JTextArea(DEFAULT_GROOVY_TRANSFORMER_CODE);
-	protected final JTextField txtSchemaRegistry = new JTextField();
+	protected final JTextField txtSchemaRegistry = new JTextField("http://127.0.0.1");
 
 	protected final Font defaultFont;
 	protected final Font monospacedFont;

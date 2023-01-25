@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.text.Normalizer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -15,7 +14,6 @@ import java.util.function.Consumer;
 
 import javax.swing.AbstractListModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -24,11 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 
-import x.mvmn.kafkagui.gui.util.JMenuBarBuilder;
-import x.mvmn.kafkagui.gui.util.JMenuBarBuilder.JMenuBuilder;
 import x.mvmn.kafkagui.gui.util.SwingUtil;
 import x.mvmn.kafkagui.lang.Tuple;
 import x.mvmn.kafkagui.model.KafkaConfigModel;
@@ -58,17 +52,7 @@ public class ConnectionsManagerWindow extends JFrame {
 		this.appConfig = appConfig;
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		JMenuBuilder menuBuilder = new JMenuBarBuilder().menu("Look&Feel");
-		String currentLnF = SwingUtil.getLookAndFeelName(UIManager.getLookAndFeel());
-		List<JCheckBoxMenuItem> lnfOptions = new ArrayList<>();
-		Arrays.stream(UIManager.getInstalledLookAndFeels()).map(LookAndFeelInfo::getName)
-				.forEach(lnf -> menuBuilder.item(lnf).checkbox().checked(currentLnF.equals(lnf)).actr(e -> {
-					SwingUtil.setLookAndFeel(lnf);
-					lnfOptions.forEach(mi -> mi.setState(lnf.equals(mi.getText())));
-					new Thread(() -> saveLaFConfig(lnf)).start();
-				}).process(mi -> lnfOptions.add((JCheckBoxMenuItem) mi)).build());
-
-		this.setJMenuBar(menuBuilder.build().build());
+		new Thread(() -> saveLaFConfig("FlatLaf Darcula")).start();
 
 		this.appHomeFolder = appHomeFolder;
 

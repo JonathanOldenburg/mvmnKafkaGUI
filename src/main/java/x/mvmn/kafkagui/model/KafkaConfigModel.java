@@ -1,13 +1,6 @@
 package x.mvmn.kafkagui.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -20,8 +13,17 @@ public class KafkaConfigModel {
 	private final List<ConfigKey> configKeys;
 
 	public KafkaConfigModel() {
-		List<ConfigKey> configKeys = new ArrayList<>();
-		for (Map.Entry<String, ConfigKey> configKeyEntry : AdminClientConfig.configDef().configKeys().entrySet()) {
+		final List<ConfigKey> configKeys = new ArrayList<>();
+		final ConfigDef configMap = AdminClientConfig.configDef();
+		configMap.define("schema.registry",
+				ConfigDef.Type.STRING,
+				"http://127.0.0.1:8081",
+				null,
+				ConfigDef.Importance.LOW,
+				"");
+		for (Map.Entry<String, ConfigKey> configKeyEntry :
+				configMap.configKeys().entrySet()
+		) {
 			String key = configKeyEntry.getKey();
 			ConfigKey configKey = configKeyEntry.getValue();
 			configKeys.add(configKey);

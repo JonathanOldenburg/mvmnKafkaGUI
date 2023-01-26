@@ -34,28 +34,38 @@ public class MVMnKafkaGUIApplication {
 		if (!appHomeFolder.exists()) {
 			appHomeFolder.mkdir();
 		}
-		SortedSet<String> existingConnectionConfigs = Arrays.asList(appHomeFolder.listFiles()).stream().filter(File::isFile)
+		SortedSet<String> existingConnectionConfigs =
+				Arrays.asList(appHomeFolder.listFiles()).stream().filter(File::isFile)
 				.map(File::getName).filter(fn -> fn.toLowerCase().endsWith(".properties"))
-				.map(fn -> fn.substring(0, fn.length() - ".properties".length())).collect(Collectors.toCollection(TreeSet::new));
+				.map(fn -> fn.substring(0, fn.length() - ".properties".length()))
+						.collect(Collectors.toCollection(TreeSet::new));
 		File configFile = new File(appHomeFolder, "config.cfg");
 		FileBackedProperties appConfig = new FileBackedProperties(configFile);
 
-		String lookAndFeelName = appConfig.getProperty("gui.lookandfeel");
 		SwingUtilities.invokeLater(() -> {
-			Stream.of(FlatLightLaf.class, FlatIntelliJLaf.class, FlatDarkLaf.class, FlatDarculaLaf.class)
-					.forEach(lafClass -> UIManager.installLookAndFeel(lafClass.getSimpleName(), lafClass.getCanonicalName()));
+			UIManager.installLookAndFeel(
+					FlatDarculaLaf.class.getSimpleName(),
+					FlatDarculaLaf.class.getCanonicalName()
+			);
 
-			if (lookAndFeelName != null) {
-				SwingUtil.setLookAndFeel(lookAndFeelName);
-			}
+			SwingUtil.setLookAndFeel("FlatDarculaLaf");
 
-			JFrame connectionsManagerWindow = new ConnectionsManagerWindow(appConfig, appHomeFolder, existingConnectionConfigs,
+			JFrame connectionsManagerWindow = new ConnectionsManagerWindow(
+					appConfig,
+					appHomeFolder,
+					existingConnectionConfigs,
 					CallUtil.unsafe(cfg -> {
 						AdminClient ac = KafkaAdminClient.create(cfg);
 						// Perform list topics as a test
 						ac.listTopics().names().get();
-						SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Connection successfull"));
-					}), cfg -> new KafkaAdminGui(cfg.getA(), cfg.getB(), appHomeFolder));
+						SwingUtilities.invokeLater(() ->
+								JOptionPane.showMessageDialog(
+										null,
+										"Connection successfull"
+								)
+						);
+					}),
+					cfg -> new KafkaAdminGui(cfg.getA(), cfg.getB(), appHomeFolder));
 			SwingUtil.prefSizeRatioOfScreenSize(connectionsManagerWindow, 0.7f);
 			connectionsManagerWindow.pack();
 			connectionsManagerWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

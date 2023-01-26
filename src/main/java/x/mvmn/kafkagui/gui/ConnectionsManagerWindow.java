@@ -46,13 +46,14 @@ public class ConnectionsManagerWindow extends JFrame {
 	private final JButton btnConnect = new JButton("Connect");
 	private final ConfigsListModel configListModel = new ConfigsListModel();
 
-	public ConnectionsManagerWindow(FileBackedProperties appConfig, File appHomeFolder, SortedSet<String> existingConnectionConfigs,
-			Consumer<Properties> testConnectionHandler, Consumer<Tuple<String, Properties, Void, Void, Void>> connectionHandler) {
+	public ConnectionsManagerWindow(FileBackedProperties appConfig,
+									File appHomeFolder,
+									SortedSet<String> existingConnectionConfigs,
+									Consumer<Properties> testConnectionHandler,
+									Consumer<Tuple<String, Properties, Void, Void, Void>> connectionHandler) {
 		super("MVMn Kafka Client GUI");
 		this.appConfig = appConfig;
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-		new Thread(() -> saveLaFConfig("FlatLaf Darcula")).start();
 
 		this.appHomeFolder = appHomeFolder;
 
@@ -169,10 +170,6 @@ public class ConnectionsManagerWindow extends JFrame {
 				btnSave.setEnabled(true);
 			}
 		});
-	}
-
-	private void saveLaFConfig(String lnf) {
-		appConfig.setProperty("gui.lookandfeel", lnf);
 	}
 
 	protected void setConfig(KafkaConfigModel configModel) {
